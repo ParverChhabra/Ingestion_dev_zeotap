@@ -21,7 +21,8 @@ public class IngestionController {
 
     ClickHouseService clickHouseService = new ClickHouseService();
 
-    @GetMapping("/tables")
+    // @GetMapping("/tables")
+    @PostMapping("/tables")
 public ResponseEntity<?> getTables(@RequestBody ConnectionConfig config) {
     try {
         List<String> tables = clickHouseService.getTableList(config);
@@ -46,7 +47,7 @@ public ResponseEntity<?> getColumns(@RequestBody TableRequest request) {
 }
 
 
-
+@CrossOrigin(origins = "http://localhost:5173")
 @PostMapping("/ch-to-file")
 public ResponseEntity<?> exportToCSV(@RequestBody ExportRequest request) {
     try {
@@ -61,6 +62,7 @@ public ResponseEntity<?> exportToCSV(@RequestBody ExportRequest request) {
     }
 }
 
+@CrossOrigin(origins = "http://localhost:5173")
 @PostMapping("/file-to-ch")
 public ResponseEntity<?> ingestCSV(@RequestBody IngestionRequest request) {
     try {

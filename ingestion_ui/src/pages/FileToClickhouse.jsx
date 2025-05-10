@@ -3,6 +3,7 @@ import axios from 'axios';
 import ConnectionForm from '../components/ConnectionForm';
 import StatusDisplay from '../components/StatusDisplay';
 import ColumnSelector from '../components/ColumnSelector';
+import styles from '../styles/form.module.css';
 
 export default function FileToClickhouse() {
   const [connection, setConnection] = useState({
@@ -15,6 +16,7 @@ export default function FileToClickhouse() {
 
   const [tableName, setTableName] = useState('');
   const [inputFilePath, setInputFilePath] = useState('');
+  const [selectedColumns, setSelectedColumns] = useState([]);
   const [status, setStatus] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -31,6 +33,7 @@ export default function FileToClickhouse() {
       const payload = {
         tableName,
         inputFilePath,
+        selectedColumns,
         connection: {
           ...connection,
           port: parseInt(connection.port)
@@ -47,30 +50,55 @@ export default function FileToClickhouse() {
   };
 
   return (
-    <div>
-      <h2>Flat File → ClickHouse Ingestion</h2>
-
-      <ConnectionForm
-        connection={connection}
-        onChange={handleConnChange}
-        onSubmit={handleIngest}
-        isConnecting={isConnecting}
-      />
-
-      <input
-        placeholder="Table Name"
-        value={tableName}
-        onChange={e => setTableName(e.target.value)}
-      />
-      <ColumnSelector connection={connection} tableName={tableName} />
-      <input
-        placeholder="Input File Path"
-        value={inputFilePath}
-        onChange={e => setInputFilePath(e.target.value)}
-      />
-
-      <button onClick={handleIngest}>Ingest CSV</button>
-      <StatusDisplay status={status} />
+    <div className={styles.formCard}>
+      <h2>CSV → ClickHouse Ingestion</h2>
+  
+      {/* ClickHouse connection form */}
+      <div className={styles.formGroup}>
+        <ConnectionForm
+          connection={connection}
+          onChange={handleConnChange}
+          onSubmit={handleIngest}
+          isConnecting={isConnecting}
+        />
+      </div>
+  
+      {/* Target table name */}
+      <div className={styles.formGroup}>
+        <input
+          placeholder="Target Table Name"
+          value={tableName}
+          onChange={e => setTableName(e.target.value)}
+        />
+      </div>
+  
+      {/* Column selection */}
+      <div className={styles.formGroup}>
+        <ColumnSelector
+          connection={connection}
+          tableName={tableName}
+          onSelectionChange={setSelectedColumns}
+        />
+      </div>
+  
+      {/* File path input */}
+      <div className={styles.formGroup}>
+        <input
+          placeholder="Input CSV File Path"
+          value={inputFilePath}
+          onChange={e => setInputFilePath(e.target.value)}
+        />
+      </div>
+  
+      {/* Ingest button */}
+      <div className={styles.formGroup}>
+        <button onClick={handleIngest}>Start Ingestion</button>
+      </div>
+  
+      {/* Status display */}
+      <div className={styles.statusMessage}>
+        <StatusDisplay status={status} />
+      </div>
     </div>
-  );
+  );  
 }

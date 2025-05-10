@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import StatusDisplay from '../components/StatusDisplay';
+import styles from '../styles/form.module.css';
 
 export default function ColumnList() {
   const [form, setForm] = useState({
@@ -33,30 +35,46 @@ export default function ColumnList() {
       });
 
       setColumns(response.data);
-      setStatus('');
+      setStatus('Columns fetched successfully.');
     } catch (error) {
       setStatus(`Error: ${error.response?.data || error.message}`);
     }
   };
 
   return (
-    <div>
-      <h2>Fetch Columns for a Table</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className={styles.formCard}>
+      <h2>Column List Viewer</h2>
+  
+      {/* Connection and Table Inputs */}
+      <div className={styles.formGroup}>
         <input name="host" placeholder="Host" onChange={handleChange} />
         <input name="port" placeholder="Port" onChange={handleChange} />
         <input name="user" placeholder="User" onChange={handleChange} />
         <input name="jwt" placeholder="JWT Token" onChange={handleChange} />
         <input name="database" placeholder="Database" onChange={handleChange} />
         <input name="tableName" placeholder="Table Name" onChange={handleChange} />
-        <button onClick={fetchColumns}>Get Columns</button>
-        {status && <p>{status}</p>}
-        {columns.length > 0 && (
-          <ul>
-            {columns.map((col, index) => <li key={index}>{col}</li>)}
-          </ul>
-        )}
       </div>
+  
+      {/* Action Button */}
+      <div className={styles.formGroup}>
+        <button onClick={fetchColumns}>Load Columns</button>
+      </div>
+  
+      {/* Status Display */}
+      <div className={styles.statusMessage}>
+        <StatusDisplay status={status} />
+      </div>
+  
+      {/* Results */}
+      {columns.length > 0 && (
+        <div className={styles.resultBox}>
+          <ul>
+            {columns.map((col, index) => (
+              <li key={index}>{col}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
-  );
+  );  
 }
